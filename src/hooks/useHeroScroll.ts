@@ -92,7 +92,7 @@ const MOBILE_MOTION: MotionConfig = {
  */
 function buildScrollMotion(root: HTMLElement, config: MotionConfig): () => void {
   const vehicle = gsap.utils.toArray<HTMLElement>("[data-vehicle]", root)[0];
-  const wheels = gsap.utils.toArray<HTMLElement>("[data-wheel]", root);
+  const wheels = gsap.utils.toArray<SVGGElement>("[data-wheel]", root);
   const body = gsap.utils.toArray<HTMLElement>('[data-part="body"]', root)[0];
   const sky = gsap.utils.toArray<HTMLElement>('[data-layer="sky"]', root)[0];
   const skylineBack = gsap.utils.toArray<HTMLElement>('[data-layer="skyline-back"]', root)[0];
@@ -128,19 +128,29 @@ function buildScrollMotion(root: HTMLElement, config: MotionConfig): () => void 
 
   /**
    * No-slip wheel roll: each full revolution covers one wheel circumference, so the
-   * turn angle across the sweep is travel ÷ circumference × 360°. The wheel group's
-   * fill-box is exactly its tyre circle, so `getBoundingClientRect().width` is the
-   * true on-screen diameter (a rotating circle keeps its bbox, so this stays exact).
+   * turn angle across the sweep is travel ÷ circumference × 360°. The tyre radius is
+   * read from the artwork's own `data-tire-radius` (in SVG units) scaled by the
+   * SVG→screen factor (rendered svg width ÷ viewBox width) — true at every width.
    * Like `getTravel`, this only runs when GSAP (re)parses the tween — on creation and
    * on refresh — never inside a scroll callback, so the deep scroll stays 60fps.
    */
+  const getTyreRadiusPx = (wheel: SVGGElement) => {
+    const svg = wheel.ownerSVGElement;
+    if (!svg) return 0;
+    const viewBoxWidth = svg.viewBox.baseVal.width;
+    const radiusVb = Number(wheel.dataset.tireRadius ?? 0);
+    return viewBoxWidth > 0 && svg.clientWidth > 0
+      ? (radiusVb * svg.clientWidth) / viewBoxWidth
+      : 0;
+  };
+
   const getWheelRotation = () => {
     const travel = getTravel();
     const wheel = wheels[0];
     if (!wheel || travel <= 0) return 0;
-    const tyreDiameterPx = wheel.getBoundingClientRect().width;
-    if (!tyreDiameterPx) return 0;
-    return (travel / (Math.PI * tyreDiameterPx)) * 360;
+    const tyreRadiusPx = getTyreRadiusPx(wheel);
+    if (!tyreRadiusPx) return 0;
+    return (travel / (2 * Math.PI * tyreRadiusPx)) * 360;
   };
 
   // Suspension: quickTo so repeated velocity changes blend instead of stacking.
@@ -188,9 +198,12 @@ function buildScrollMotion(root: HTMLElement, config: MotionConfig): () => void 
     },
   });
 
-  // Vehicle sweep; wheels roll the no-slip distance beneath the body.
+  // Vehicle sweep; wheels roll the no-slip distance beneath the body. The rotation
+  // pivot is declared *in the tween* as the wheel's own bbox centre (≡ its local
+  // (0,0) = the axle): GSAP resolves it per-target in SVG units, so rear and front
+  // wheels each spin around their own axle. No CSS transform-box/origin involved.
   timeline.to(vehicle, { x: getTravel, duration: 1 }, 0);
-  timeline.to(wheels, { rotation: getWheelRotation, duration: 1 }, 0);
+  timeline.to(wheels, { rotation: getWheelRotation, transformOrigin: "50% 50%", duration: 1 }, 0);
 
   // Parallax: nearer layers travel further, building depth.
   timeline.to(sky, { xPercent: -config.parallaxSky * 100, duration: 1 }, 0);

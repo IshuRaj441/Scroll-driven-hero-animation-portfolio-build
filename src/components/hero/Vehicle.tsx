@@ -20,14 +20,16 @@ type WheelProps = {
 
 function Wheel({ cx, cy }: WheelProps) {
   return (
+    /*
+     * Two-layer wheel so rotation can never shift the axle:
+     *  - the OUTER group pins the axle position in the car's coordinate space — GSAP
+     *    never touches it, so the wheel cannot walk relative to the body;
+     *  - the INNER `data-wheel` group owns all the artwork, drawn centred on local
+     *    (0,0), which is exactly the axle. Rotating that group about its own bbox
+     *    centre (≡ local (0,0)) spins the tyre in place — no fill-box magic.
+     */
     <g transform={`translate(${cx} ${cy})`}>
-      {/* Inner group shares the axle as its origin, so a rotation spins it in place. */}
-      <g
-        data-wheel
-        data-tire-radius={TIRE_RADIUS}
-        className="will-change-transform"
-        style={{ transformBox: "fill-box", transformOrigin: "center" }}
-      >
+      <g data-wheel data-tire-radius={TIRE_RADIUS} className="will-change-transform">
         <circle r={TIRE_RADIUS} fill="#0a0f1c" />
         <circle r={TIRE_RADIUS} fill="none" stroke="#1c2740" strokeWidth={2} />
         <circle r={34} fill="none" stroke="#ffffff" strokeOpacity={0.05} />
