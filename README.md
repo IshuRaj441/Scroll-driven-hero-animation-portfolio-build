@@ -1,10 +1,10 @@
 # Welcome Itz Fizz — Scroll-Driven Hero
 
-[![Deploy to GitHub Pages](https://github.com/<username>/<repo>/actions/workflows/deploy.yml/badge.svg)](https://github.com/<username>/<repo>/actions/workflows/deploy.yml)
+[![Deploy to GitHub Pages](https://github.com/IshuRaj441/Scroll-driven-hero-animation-portfolio-build/actions/workflows/deploy.yml/badge.svg)](https://github.com/IshuRaj441/Scroll-driven-hero-animation-portfolio-build/actions/workflows/deploy.yml)
 
 A portfolio-grade scroll-driven hero animation built with **Next.js (App Router)**, **React 19**, **GSAP + ScrollTrigger**, **Tailwind CSS v4** and **TypeScript**. A letter-spaced `W E L C O M E   I T Z   F I Z Z` headline, four impact metrics, and an original multi-layer SVG coupe that sweeps across a night freeway as you scroll.
 
-> 🔗 Live demo: `https://<username>.github.io/<repo>/` — GitHub repo: `https://github.com/<username>/<repo>`
+> 🔗 Live demo: `https://IshuRaj441.github.io/Scroll-driven-hero-animation-portfolio-build/` — GitHub repo: `https://github.com/IshuRaj441/Scroll-driven-hero-animation-portfolio-build`
 
 The concept and motion directions are inspired by [paraschaturvedi's car scroll animation](https://paraschaturvedi.github.io/car-scroll-animation/); every asset, SVG, layout and tween in this project is built from scratch.
 
@@ -77,12 +77,12 @@ src/
 ## Deploying to GitHub Pages
 
 1. Push this repo to GitHub (it needs to be a **public or Pages-enabled private** repo).
-2. Create the repo with the name you want to serve under, e.g. `github.com/<username>/<repo>`.
+2. Create the repo with the name you want to serve under, e.g. `github.com/IshuRaj441/Scroll-driven-hero-animation-portfolio-build`.
 3. On GitHub, open **Settings → Pages → Build and deployment → Source** and select **GitHub Actions**.
-4. Push to `main` (or run the workflow manually via **Actions**). The workflow builds `./out` with `NEXT_PUBLIC_BASE_PATH=/<repo>` and publishes it with `actions/deploy-pages`.
-5. After the first successful deploy, replace `<username>` / `<repo>` in `public/robots.txt`, `public/sitemap.xml`, and this file's links, then redeploy.
+4. Push to `main` (or run the workflow manually via **Actions**). The workflow builds `./out` with `NEXT_PUBLIC_BASE_PATH=/Scroll-driven-hero-animation-portfolio-build` and publishes it with `actions/deploy-pages`.
+5. The `public/robots.txt` and `public/sitemap.xml` already reference this repo's Pages address — no URL edits are needed.
 
-Your site is then live at `https://<username>.github.io/<repo>/`.
+Your site is then live at `https://IshuRaj441.github.io/Scroll-driven-hero-animation-portfolio-build/`.
 
 ## License
 

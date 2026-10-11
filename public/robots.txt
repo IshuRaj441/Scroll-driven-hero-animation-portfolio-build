@@ -2,5 +2,4 @@
 User-agent: *
 Allow: /
 
-# Replace <username> and <repo> with your GitHub Pages address after deploying.
-Sitemap: https://<username>.github.io/<repo>/sitemap.xml
+Sitemap: https://IshuRaj441.github.io/Scroll-driven-hero-animation-portfolio-build/sitemap.xml
