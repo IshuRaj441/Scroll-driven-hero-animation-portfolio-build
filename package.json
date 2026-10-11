@@ -7,7 +7,7 @@
     "build": "next build",
     "preview": "npx --yes serve@latest out",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
