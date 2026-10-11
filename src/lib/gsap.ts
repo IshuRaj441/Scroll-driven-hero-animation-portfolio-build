@@ -23,8 +23,12 @@ export const SCRUB_SMOOTHING = 1;
 /** How long the hero stays pinned, measured in viewport heights of scroll. */
 export const PIN_DURATION_VH = 2.5;
 
-/** Degrees the wheels turn across the full sweep (3 full revolutions). */
-export const WHEEL_ROTATION_MAX = 1080;
+/**
+ * Wheel rotation is intentionally *not* a constant: the wheels roll with no slip, so
+ * the turn angle = distance travelled ÷ wheel circumference (computed in the scroll
+ * hook from the rendered tyre geometry on every ScrollTrigger refresh). A fixed
+ * per-breakpoint degree value would make the wheels drag or spin against the car.
+ */
 
 /** Peak body tilt from scroll velocity, in degrees. */
 export const TILT_MAX_DEG = 1.2;

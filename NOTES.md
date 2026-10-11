@@ -90,7 +90,7 @@ overlap slightly (no dead zones) and reverse identically.
 | Progress `p` | Layer                 | Motion (transform-only)                                                    | Easing / notes                                          |
 | ------------ | --------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------- |
 | 0.00 → 1.00  | **Vehicle X**         | `x: from 8vw → (100vw - carW - 8vw)`                                       | `ease:none` (linear vs progress) + `scrub:1` smoothing  |
-| 0.00 → 1.00  | **Wheels**            | `rotation: 0 → 1080deg`, _proportional to X_ (rad = distance / radius)     | derived from same progress, so it never desyncs         |
+| 0.00 → 1.00  | **Wheels**            | `rotation: 0 → travel ÷ circumference × 360°` (no-slip roll)               | measured from rendered tyre diameter on refresh         |
 | 0.05 → 0.95  | **Body tilt**         | `rotation: -1.2deg → 1.2deg` from scroll **velocity**                      | velocity→tilt via `quickTo`, clamped, springs back to 0 |
 | 0.00 → 0.60  | **Suspension bounce** | `y` micro-bounce (±3px) driven by `abs(velocity)`                          | decays as car settles                                   |
 | 0.00 → 1.00  | **Sky (back)**        | `x`: `0 → -4%`, `scale 1.04`                                               | slowest = furthest                                      |
@@ -129,7 +129,9 @@ parallax, stat values shown at final numbers, layout stays fully readable.
 
 - `SCRUB_SMOOTHING = 1` — seconds of catch-up; fluid without feeling laggy.
 - `PIN_SCROLL_LENGTH = "+=250%"` — how long the hero stays pinned.
-- `WHEEL_ROTATION_MAX = 1080` — 3 full turns across the sweep.
+- Wheels roll with **no slip**: `rotation = travel ÷ (2π·tyreRadius) × 360°`, computed in the
+  scroll hook from the rendered tyre diameter on every ScrollTrigger refresh. A fixed
+  per-breakpoint degree value would make the wheels drag against or over-run the car.
 - `TILT_MAX_DEG = 1.2`, `BOUNCE_MAX_PX = 3`, `VELOCITY_CLAMP = 1200`.
 - `HEADLINE_STAGGER = 0.05`, `STATS_STAGGER = 0.12`.
 - Shared eases: `EASE_OUT = "power3.out"`, `EASE_IN_OUT = "power2.inOut"`, `EASE_LINEAR = "none"`.

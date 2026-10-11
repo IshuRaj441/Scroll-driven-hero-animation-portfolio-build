@@ -16,7 +16,6 @@ import {
   ScrollTrigger,
   TILT_MAX_DEG,
   VELOCITY_CLAMP,
-  WHEEL_ROTATION_MAX,
 } from "@/lib/gsap";
 
 /*
@@ -39,8 +38,6 @@ const SUSPENSION_SETTLE_MS = 180;
 type MotionConfig = {
   /** Pin duration, in viewport heights of scroll. */
   pinVh: number;
-  /** Total wheel turn across the sweep, in degrees. */
-  wheelRotation: number;
   /** Parallax rate for each layer, as a fraction of the layer's own width. */
   parallaxSky: number;
   parallaxBack: number;
@@ -61,7 +58,6 @@ type MotionConfig = {
 /** The full desktop experience — the numbers used since Phase 4. */
 const DESKTOP_MOTION: MotionConfig = {
   pinVh: PIN_DURATION_VH,
-  wheelRotation: WHEEL_ROTATION_MAX,
   parallaxSky: PARALLAX_SKY,
   parallaxBack: PARALLAX_SKYLINE_BACK,
   parallaxFront: PARALLAX_SKYLINE_FRONT,
@@ -77,7 +73,6 @@ const DESKTOP_MOTION: MotionConfig = {
 /** Simplified motion below 768px: shorter runway, gentler parallax, no letter wave. */
 const MOBILE_MOTION: MotionConfig = {
   pinVh: 1.8,
-  wheelRotation: 720,
   parallaxSky: 0.02,
   parallaxBack: 0.06,
   parallaxFront: 0.1,
@@ -131,6 +126,23 @@ function buildScrollMotion(root: HTMLElement, config: MotionConfig): () => void 
     return Math.max(0, stage.clientWidth - vehicle.offsetWidth - 2 * vehicle.offsetLeft);
   };
 
+  /**
+   * No-slip wheel roll: each full revolution covers one wheel circumference, so the
+   * turn angle across the sweep is travel ÷ circumference × 360°. The wheel group's
+   * fill-box is exactly its tyre circle, so `getBoundingClientRect().width` is the
+   * true on-screen diameter (a rotating circle keeps its bbox, so this stays exact).
+   * Like `getTravel`, this only runs when GSAP (re)parses the tween — on creation and
+   * on refresh — never inside a scroll callback, so the deep scroll stays 60fps.
+   */
+  const getWheelRotation = () => {
+    const travel = getTravel();
+    const wheel = wheels[0];
+    if (!wheel || travel <= 0) return 0;
+    const tyreDiameterPx = wheel.getBoundingClientRect().width;
+    if (!tyreDiameterPx) return 0;
+    return (travel / (Math.PI * tyreDiameterPx)) * 360;
+  };
+
   // Suspension: quickTo so repeated velocity changes blend instead of stacking.
   const setTilt = gsap.quickTo(body, "rotation", {
     duration: VELOCITY_TILT_DURATION,
@@ -176,9 +188,9 @@ function buildScrollMotion(root: HTMLElement, config: MotionConfig): () => void 
     },
   });
 
-  // Vehicle sweep; wheels turn in direct proportion to distance travelled.
+  // Vehicle sweep; wheels roll the no-slip distance beneath the body.
   timeline.to(vehicle, { x: getTravel, duration: 1 }, 0);
-  timeline.to(wheels, { rotation: config.wheelRotation, duration: 1 }, 0);
+  timeline.to(wheels, { rotation: getWheelRotation, duration: 1 }, 0);
 
   // Parallax: nearer layers travel further, building depth.
   timeline.to(sky, { xPercent: -config.parallaxSky * 100, duration: 1 }, 0);

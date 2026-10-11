@@ -24,6 +24,7 @@ function Wheel({ cx, cy }: WheelProps) {
       {/* Inner group shares the axle as its origin, so a rotation spins it in place. */}
       <g
         data-wheel
+        data-tire-radius={TIRE_RADIUS}
         className="will-change-transform"
         style={{ transformBox: "fill-box", transformOrigin: "center" }}
       >

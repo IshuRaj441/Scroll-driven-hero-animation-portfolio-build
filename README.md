@@ -18,7 +18,7 @@ The concept and motion directions are inspired by [paraschaturvedi's car scroll 
 
 | Scroll progress | What happens                                                                                                                   |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `0.00 → 1.00`   | Coupe travels left → right; both wheels rotate **1080°** in direct proportion to distance travelled                            |
+| `0.00 → 1.00`   | Coupe travels left → right; both wheels roll the distance — **360° per wheel circumference**, no slip at any viewport          |
 | `0.00 → 1.00`   | Parallax depth: sky drifts 4%, skyline-back 12%, skyline-front 22%, road lines 30% of their own width                          |
 | `0.00 → 1.00`   | Headline recedes upward and fades into the background                                                                          |
 | `0.04 → 0.76`   | Headline letters lift in reading order — a left→right wave that mirrors the car's run                                          |
@@ -41,7 +41,7 @@ Scrolling back reverses the journey pixel-for-pixel — no one-way tween, every 
 - **~170 KB gzip of JS** total, no raster images, self-hosted `woff2` fonts with `font-display: swap`, and a CLS-proof loading sequence (tabular, fixed-width counters).
 - **First paint needs no JS:** pure-CSS guards render a complete static hero before hydration; a `<noscript>` block keeps it visible with JS disabled.
 - **`prefers-reduced-motion`:** respected end-to-end — no pin, no scrub, no counters; the hero stays a clean static composition.
-- **Responsive 360 → 1920px+:** the rich experience runs ≥768px; below that a _simplified on mobile_ config takes over (shorter 1.8vh pin, 720° wheel turn, gentler parallax, no letter wave). `gsap.matchMedia` rebuilds the pin cleanly when the breakpoint is crossed, and function-based positions re-read on resize.
+- **Responsive 360 → 1920px+:** the rich experience runs ≥768px; below that a _simplified on mobile_ config takes over (shorter 1.8vh pin, gentler parallax, no letter wave). `gsap.matchMedia` rebuilds the pin cleanly when the breakpoint is crossed, and function-based positions re-read on resize.
 - **Semantic a11y:** single `h1` with `aria-label` + `aria-hidden` letters, a real `<dl>/<dt>/<dd>` for the metrics, `aria-hidden` decorative SVG art, `lang="en"`, landmark regions, and a visible `:focus-visible` ring.
 
 ## Getting started
