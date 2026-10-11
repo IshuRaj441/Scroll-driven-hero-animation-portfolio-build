@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens (Tailwind v4 CSS-first config).
+ * A "night freeway" palette: near-black sky, layered indigo haze, one electric accent.
+ */
+@theme {
+  --color-night-950: #05070f;
+  --color-night-900: #0a0e1d;
+  --color-night-800: #121a33;
+  --color-night-700: #1d2b52;
+  --color-accent: #5ee7ff;
+  --color-accent-soft: #9af1ff;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  background-color: var(--color-night-950);
+  color: #eef4ff;
+  font-family: var(--font-sans);
+  /*
+   * Use `clip`, not `hidden`: `overflow-x: hidden` silently forces
+   * `overflow-y: auto`, which turns <body> into a scroll container and breaks
+   * ScrollTrigger's pinning (the pin spacer never grows). `clip` keeps the axis
+   * independent and leaves pinning intact.
+   */
+  overflow-x: clip;
+}
+
+/*
+ * Only show a focus ring when navigating by keyboard (pointer clicks keep the UI
+ * clean), matching the accent so the ring is visible on the night background.
+ */
+:focus-visible {
+  outline: 2px solid var(--color-accent-soft);
+  outline-offset: 2px;
+}
+
+/* Respect users who ask for less motion: kill CSS transitions too. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/*
+ * First-paint flash guard.
+ *
+ * The hero ships its final, readable markup (good for SEO). For users who allow
+ * motion, hide the animated layers from the very first paint so the intro's "from"
+ * state never flashes; GSAP then reveals them. This is pure CSS (no script), so it
+ * cannot cause a hydration mismatch. Users who prefer reduced motion skip the block
+ * entirely, and users without JS are covered by the <noscript> guard in the layout.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-headline],
+  [data-letter],
+  [data-stat],
+  [data-vehicle] {
+    opacity: 0;
+  }
+}
